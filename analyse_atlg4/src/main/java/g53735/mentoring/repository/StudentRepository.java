@@ -9,29 +9,47 @@ import java.util.List;
  */
 public class StudentRepository implements Repository<StudentDto> {
 
+    StudentDao dao;
+
+    public StudentRepository() {
+        this.dao = new StudentDao();
+    }
+
     @Override
     public void add(StudentDto item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (item == null) {
+            throw new IllegalArgumentException();
+        }
+        if (contains(item)) {
+            this.dao.update(item);
+        } else {
+            this.dao.insert(item);
+        }
     }
 
     @Override
     public void remove(StudentDto item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (item == null || this.dao.get(item) == null) {
+            throw new IllegalArgumentException();
+        }
+        this.dao.delete(item);
     }
 
     @Override
     public StudentDto get(StudentDto item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (item == null) {
+            throw new IllegalArgumentException();
+        }
+        return this.dao.get(item);
     }
 
     @Override
-    public List<StudentDto> getAll(StudentDto item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public List<StudentDto> getAll() {
+        return this.dao.getAll();
     }
 
     @Override
     public boolean contains(StudentDto item) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.dao.get(item) != null;
     }
-
 }

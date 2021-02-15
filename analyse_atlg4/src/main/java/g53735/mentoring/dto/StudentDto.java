@@ -77,5 +77,5 @@ public class StudentDto {
         return "StudentDto{" + "matricule=" + matricule + ", firstName="
                 + firstName + ", lastName=" + lastName + '}';
     }
-    
+
 }

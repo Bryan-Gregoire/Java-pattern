@@ -17,5 +17,5 @@ public interface Dao<T> {
 
     public T get(T item);
 
-    public List<T> getAll(T item);
+    public List<T> getAll();
 }
