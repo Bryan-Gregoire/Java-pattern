@@ -1,4 +1,4 @@
-package TD2_Repository_Pattern;
+package g53735.mentoring.mentoring;
 
 import g53735.mentoring.config.ConfigManager;
 import g53735.mentoring.dto.StudentDto;

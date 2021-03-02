@@ -7,6 +7,7 @@ import java.util.List;
 /**
  *
  * @author g53735
+ * @param <K>
  * @param <T>
  */
 public interface Dao<K, T extends Dto<K>> {

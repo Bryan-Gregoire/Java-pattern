@@ -27,12 +27,19 @@ public class StudentDao implements Dao<Integer, StudentDto> {
             path = Paths.get(ConfigManager.getInstance()
                     .getProperties("file.url"));
         } catch (IOException e) {
-            throw new RepositoryException();
+            throw new RepositoryException(e);
         }
+    }
+
+    StudentDao(String uri) {
+        this.path = Paths.get(uri);
     }
 
     @Override
     public void insert(StudentDto item) throws RepositoryException {
+        if (item == null) {
+            throw new RepositoryException("Aucun élement en paramètre " + item);
+        }
         try {
             StringBuilder etudiant = new StringBuilder();
             etudiant.append(item.getKey()).append(",")
@@ -46,11 +53,10 @@ public class StudentDao implements Dao<Integer, StudentDto> {
 
     @Override
     public void delete(Integer key) throws RepositoryException {
-        if (key == null || get(key) == null) {
+        if (key == null) {
             throw new RepositoryException("Aucun élément en paramètre ");
         }
         try {
-
 //            StringBuilder etudiant = new StringBuilder();
 //            etudiant.append(item.getMatricule()).append(",")
 //                    .append(item.getFirstName()).append(",")
@@ -64,6 +70,7 @@ public class StudentDao implements Dao<Integer, StudentDto> {
 //            System.out.println("Erreur de lecture du fichier "
 //                    + e.getMessage());
 //        }
+
             String list = Files.lines(path).filter(var
                     -> !var.contains(Integer.toString(key)))
                     .collect(Collectors.joining("\n"));
@@ -76,6 +83,9 @@ public class StudentDao implements Dao<Integer, StudentDto> {
 
     @Override
     public void update(StudentDto item) throws RepositoryException {
+        if (item == null) {
+            throw new RepositoryException("Aucun élement en paramètre " + item);
+        }
         this.delete(item.getKey());
         this.insert(item);
     }
