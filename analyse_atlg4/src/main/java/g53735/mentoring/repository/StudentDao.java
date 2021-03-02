@@ -1,7 +1,8 @@
 package g53735.mentoring.repository;
 
-import TD2_Repository_Pattern.ConfigManager;
+import g53735.mentoring.config.ConfigManager;
 import g53735.mentoring.dto.StudentDto;
+import g53735.mentoring.exception.RepositoryException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,39 +17,37 @@ import java.util.stream.Stream;
  *
  * @author g53735
  */
-public class StudentDao implements Dao<StudentDto> {
+public class StudentDao implements Dao<Integer, StudentDto> {
 
     Path path;
 
-    public StudentDao() {
+    public StudentDao() throws RepositoryException {
         try {
             ConfigManager.getInstance().load();
             path = Paths.get(ConfigManager.getInstance()
                     .getProperties("file.url"));
         } catch (IOException e) {
-            System.out.println("Erreur de chargement du fichier properties "
-                    + e.getMessage());
+            throw new RepositoryException();
         }
     }
 
     @Override
-    public void insert(StudentDto item) {
+    public void insert(StudentDto item) throws RepositoryException {
         try {
             StringBuilder etudiant = new StringBuilder();
-            etudiant.append(item.getMatricule()).append(",")
+            etudiant.append(item.getKey()).append(",")
                     .append(item.getFirstName()).append(",")
                     .append(item.getLastName()).append("\n");
             Files.writeString(path, etudiant, StandardOpenOption.APPEND);
         } catch (IOException e) {
-            System.out.println("Erreur de lecture du fichier "
-                    + e.getMessage());
+            throw new RepositoryException(e);
         }
     }
 
     @Override
-    public void delete(StudentDto item) {
-        if (item == null || get(item) == null) {
-            throw new IllegalArgumentException();
+    public void delete(Integer key) throws RepositoryException {
+        if (key == null || get(key) == null) {
+            throw new RepositoryException("Aucun élément en paramètre ");
         }
         try {
 
@@ -65,56 +64,53 @@ public class StudentDao implements Dao<StudentDto> {
 //            System.out.println("Erreur de lecture du fichier "
 //                    + e.getMessage());
 //        }
-
             String list = Files.lines(path).filter(var
-                    -> !var.contains(Integer.toString(item.getMatricule())))
+                    -> !var.contains(Integer.toString(key)))
                     .collect(Collectors.joining("\n"));
             list += "\n";
             Files.writeString(path, list);
         } catch (IOException e) {
-            System.out.println("Erreur de lecture du fichier "
-                    + e.getMessage());
+            throw new RepositoryException(e);
         }
     }
 
     @Override
-    public void update(StudentDto item) {
-        this.delete(item);
+    public void update(StudentDto item) throws RepositoryException {
+        this.delete(item.getKey());
         this.insert(item);
     }
 
     @Override
-    public StudentDto get(StudentDto item) {
-        if (item == null) {
-            throw new IllegalArgumentException();
+    public StudentDto get(Integer key) throws RepositoryException {
+        if (key == null) {
+            throw new RepositoryException("Aucun élément en paramètre ");
         }
         try {
-
-            Stream<String> etu = Files.lines(path);
-
-            StringBuilder etudiant = new StringBuilder();
-            etudiant.append(item.getMatricule()).append(",")
-                    .append(item.getFirstName()).append(",")
-                    .append(item.getLastName());
-            boolean find = etu.anyMatch(var
-                    -> var.equalsIgnoreCase(etudiant.toString()));
-            return find ? item : null;
+            var line = Files.lines(path)
+                    .filter(s -> s.startsWith(key + ""))
+                    .findFirst();
+            if (line.isPresent()) {
+                String foundLine = line.get();
+                var dataList = Stream.of(foundLine.split(","))
+                        .collect(Collectors.toList());
+                return new StudentDto(Integer.parseInt(dataList.get(0)),
+                        dataList.get(1), dataList.get(2));
+            }
+            return null;
         } catch (IOException e) {
-            System.out.println("Erreur de lecture du fichier "
-                    + e.getMessage());
+            throw new RepositoryException(e);
         }
-        return null;
     }
 
     @Override
-    public List<StudentDto> getAll() {
+    public List<StudentDto> getAll() throws RepositoryException {
         List<StudentDto> std = new ArrayList<StudentDto>();
         try {
             std = Files.lines(path).map(fct -> fct.split(","))
-                    .map(fct2 -> new StudentDto(Integer.parseInt(fct2[0]), fct2[1], fct2[2])).collect(Collectors.toList());
+                    .map(fct2 -> new StudentDto(Integer.parseInt(fct2[0]),
+                    fct2[1], fct2[2])).collect(Collectors.toList());
         } catch (IOException e) {
-            System.out.println("Erreur de lecture du fichier "
-                    + e.getMessage());
+            throw new RepositoryException(e);
         }
         return std;
     }

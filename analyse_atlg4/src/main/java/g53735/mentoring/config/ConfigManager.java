@@ -1,4 +1,4 @@
-package TD2_Repository_Pattern;
+package g53735.mentoring.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
