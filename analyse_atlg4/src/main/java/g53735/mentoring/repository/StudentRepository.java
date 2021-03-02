@@ -16,11 +16,12 @@ public class StudentRepository implements Repository<Integer, StudentDto> {
         this.dao = new StudentDao();
     }
 
+    public StudentRepository(StudentDao dao) {
+        this.dao = dao;
+    }
+
     @Override
     public void add(StudentDto item) throws RepositoryException {
-        if (item == null) {
-            throw new IllegalArgumentException();
-        }
         if (contains(item.getKey())) {
             this.dao.update(item);
         } else {
@@ -30,17 +31,11 @@ public class StudentRepository implements Repository<Integer, StudentDto> {
 
     @Override
     public void remove(Integer key) throws RepositoryException {
-        if (key == null || this.dao.get(key) == null) {
-            throw new IllegalArgumentException();
-        }
         this.dao.delete(key);
     }
 
     @Override
     public StudentDto get(Integer key) throws RepositoryException {
-        if (key == null) {
-            throw new IllegalArgumentException();
-        }
         return this.dao.get(key);
     }
 

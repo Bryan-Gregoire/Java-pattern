@@ -6,8 +6,8 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *

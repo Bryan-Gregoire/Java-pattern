@@ -114,7 +114,7 @@ public class StudentDao implements Dao<Integer, StudentDto> {
 
     @Override
     public List<StudentDto> getAll() throws RepositoryException {
-        List<StudentDto> std = new ArrayList<StudentDto>();
+        List<StudentDto> std = new ArrayList<>();
         try {
             std = Files.lines(path).map(fct -> fct.split(","))
                     .map(fct2 -> new StudentDto(Integer.parseInt(fct2[0]),
