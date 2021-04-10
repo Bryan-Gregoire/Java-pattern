@@ -23,6 +23,7 @@ public class Mentoring {
 
 //        String author = ConfigManager.getInstance().getProperties("app.author");
 //        System.out.println("Auteur : " + author);
+
         StudentRepository std = new StudentRepository();
         StudentDto shahed = new StudentDto(52046, "Chahed", "Akeche");
         StudentDto dylan = new StudentDto(54027, "Dylan", "Bricar");
